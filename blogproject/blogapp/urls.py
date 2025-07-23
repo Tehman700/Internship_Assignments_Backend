@@ -16,5 +16,5 @@ urlpatterns = [
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),      # (Optional) JWT token refresh
 
 
-   # path('admin_deletion/', admin_deletion, name = 'admin-deletion'),
+   path('admin_deletion/', admin_deletion, name = 'admin-deletion'),
 ]

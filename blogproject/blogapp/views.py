@@ -10,9 +10,6 @@ from rest_framework.exceptions import PermissionDenied
 from .urls import *
 
 
-
-
-
 """
 Workflow for RegisterViewSet:
 - Accepts user data (username, password, role, etc.) via POST request.
@@ -36,7 +33,22 @@ class RegisterViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer       # Used everytime for telling what serializer and queryset using
     http_method_names = ['post']
 
+# INTENTIONALLY ADDED THIS SO THAT OTHER REQUEST OTHER THAN POST WILL NOT GET 405 EXCEPTION:
+    def dispatch(self, request, *args, **kwargs):
+        # Allow only POST requests
+        if request.method != 'POST':
+            return JsonResponse({
+                "status": 1,
+                "message": f"Method {request.method} not allowed. Only POST is supported."
+            }, status=200)
+        return super().dispatch(request, *args, **kwargs)
+
+
+
     def create(self, request, *args, **kwargs):
+
+        if request.method != 'POST':
+            return JsonResponse({'error': 'Method must be POST.'}, status=200)
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
@@ -84,6 +96,18 @@ class RegisterViewSet(viewsets.ModelViewSet):
     """
 
 class LoginViewSet(viewsets.ViewSet):
+
+    # INTENTIONALLY ADDED THIS SO THAT OTHER REQUEST OTHER THAN POST WILL NOT GET 405 EXCEPTION:
+    def dispatch(self, request, *args, **kwargs):
+        # Allow only POST requests
+        if request.method != 'POST':
+            return JsonResponse({
+                "status": 1,
+                "message": f"Method {request.method} not allowed. Only POST is supported."
+            }, status=200)
+        return super().dispatch(request, *args, **kwargs)
+
+
     def create(self, request):    # Handles POST and Login Requests
         try:
             serializer = LoginSerializer(data=request.data)
@@ -189,12 +213,13 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     def create(self, request):
 
         # This block is used whenever we want specific operations to be performed on specific user
-        try:
-            self.check_permissions(request)
-        except PermissionDenied as e:
+        permission = IsWriterOrReadOnly()
+
+        if not permission.has_permission(request, self):
+            # Permission denied, return custom response
             return Response({
                 "status": 1,
-                "message": str(e)
+                "message": "You are not allowed you are viewer"
             }, status=200)
 
 
@@ -285,40 +310,60 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 
-# import json
-# from django.http import JsonResponse
-# from django.views.decorators.csrf import csrf_exempt
-# from django.db import connection
-# from .models import BlogPost
+
+
+
+
+
+
 #
-# @csrf_exempt
-# def admin_deletion(request):
-#     if request.method != 'POST':
-#         return JsonResponse({"status": 1, "message": "Only POST allowed"}, status=200)
-#
-#     try:
-#         body = json.loads(request.body)
-#         username = body.get("username")
-#         password = body.get("password")
-#     except json.JSONDecodeError:
-#         return JsonResponse({"status": -1, "message": "Invalid JSON body"}, status=200)
-#
-#     # Hardcoded credentials
-#     admin_username = "admin123"
-#     admin_password = "deleteAll"
-#
-#     if username != admin_username or password != admin_password:
-#         return JsonResponse({"status": 1, "message": "Invalid admin credentials"}, status=200)
-#
-#     # Delete all blog posts
-#     BlogPost.objects.all().delete()
-#
-#     # Reset auto-increment ID
-#     with connection.cursor() as cursor:
-#         db_engine = connection.vendor
-#         if db_engine == 'sqlite':
-#             cursor.execute("DELETE FROM sqlite_sequence WHERE name='yourapp_blogpost'")
-#         elif db_engine == 'postgresql':
-#             cursor.execute("ALTER SEQUENCE yourapp_blogpost_id_seq RESTART WITH 1")
-#
-#     return JsonResponse({"status": 0, "message": "All blog posts deleted and ID reset"}, status=200)
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+from django.db import connection
+from .models import BlogPost
+
+User = get_user_model()
+
+@csrf_exempt
+def admin_deletion(request):
+    if request.method != 'POST':
+        return JsonResponse({"status": 1, "message": "Only POST allowed"}, status=200)
+
+    try:
+        body = json.loads(request.body)
+        username = body.get("username")
+        password = body.get("password")
+    except json.JSONDecodeError:
+        return JsonResponse({"status": -1, "message": "Invalid JSON body"}, status=200)
+
+    # Hardcoded credentials
+    admin_username = "admin123"
+    admin_password = "deleteEverything"
+
+    if username != admin_username or password != admin_password:
+        return JsonResponse({"status": 1, "message": "Invalid admin credentials"}, status=200)
+
+    try:
+        # Delete all blog posts and users
+        BlogPost.objects.all().delete()
+        User.objects.all().delete()
+
+        # Reset auto-increment ID counters for blog posts and users
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_blogpost'")
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_user'")
+
+        return JsonResponse({
+            "status": 0,
+            "message": "All blog posts and users deleted. IDs reset to 1."
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            "status": -1,
+            "message": "Unexpected error during deletion",
+            "errors": str(e)
+        }, status=200)
+
