@@ -9,9 +9,29 @@ from rest_framework.exceptions import PermissionDenied
 
 
 
+
+
+"""
+Workflow for RegisterViewSet:
+- Accepts user data (username, password, role, etc.) via POST request.
+- Validates the incoming data using RegisterSerializer.
+- If valid:
+    - Saves the new user.
+    - Returns success response with status code 0 and user data.
+- If invalid:
+    - Returns error response with status code 1 and serializer validation errors.
+- If an unexpected exception occurs:
+    - Returns initial error with status code -1 and error message.
+
+Always returns HTTP 200 OK, regardless of success or error,
+except for incorrect URL (which would be 404).
+"""
+
+
+
 class RegisterViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = RegisterSerializer
+    serializer_class = RegisterSerializer       # Used everytime for telling what serializer and queryset using
     http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):
@@ -43,13 +63,29 @@ class RegisterViewSet(viewsets.ModelViewSet):
                         "errors": str(e)
                     }, status=200)
 
+
+
+    """
+    Workflow for LoginViewSet:
+    - Accepts login credentials (e.g., username/email and password) via POST request.
+    - Uses LoginSerializer to validate credentials.
+    - If valid:
+        - Retrieves the authenticated user.
+        - Generates JWT refresh and access tokens using RefreshToken.
+        - Returns tokens with status code 0 and success message.
+    - If invalid:
+        - Returns errors with status code 1 and failure message.
+    - If an unexpected error occurs:
+        - Returns error message with status code -1.
+
+    Always returns HTTP 200 OK for all cases except URL not found.
+    """
+
 class LoginViewSet(viewsets.ViewSet):
-
-
-    def create(self, request):
+    def create(self, request):    # Handles POST and Login Requests
         try:
             serializer = LoginSerializer(data=request.data)
-            if serializer.is_valid():
+            if serializer.is_valid():  #  The validate() method in the LoginSerializer returns a user if valid
                 user = serializer.validated_data
                 refresh = RefreshToken.for_user(user)
                 return Response({"status": 0, "message": "Login successfully", "refresh": str(refresh), "access": str(refresh.access_token)}, status=200)
@@ -93,6 +129,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     permission_classes = [IsWriterOrReadOnly]
 
 
+
+
+# Normally we use builtin queryset for fetching all the users, but we have some restrictions so created separate function
     def get_queryset(self):
         user = self.request.user                                # the particular user
         if user.is_authenticated:                               # if is validated and authenticated, it covers all JWT
@@ -101,10 +140,14 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             return BlogPost.objects.all()                       # viewer sees all
         return BlogPost.objects.none()                          # return empty if nothing
 
-    def list(self, request):
+
+
+# The above function just gets the raw queryset to view it we use below function
+
+    def list(self, request):  # Called when GET /api/blogs/
         try:
             queryset = self.get_queryset()
-            serializer = self.get_serializer(queryset, many=True)
+            serializer = self.get_serializer(queryset, many=True)  # Converts to list of dictionaries
             return Response({
                 "status": 0,
                 "message": "Blog posts fetched successfully",
@@ -117,7 +160,11 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "errors": str(e)
             }, status=200)
 
-    def retrieve(self, request, *args, **kwargs):
+
+
+
+# Retrieve function is called when we want to get specific id or blogpost with id
+    def retrieve(self, request, *args, **kwargs):  # GET /api/blogs/<id>/
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
@@ -133,7 +180,13 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "errors": str(e)
             }, status=200)
 
+
+
+
+
     def create(self, request):
+
+        # This block is used whenever we want specific operations to be performed on specific user
         try:
             self.check_permissions(request)
         except PermissionDenied as e:
@@ -141,26 +194,35 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "status": 1,
                 "message": str(e)
             }, status=200)
+
+
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(author=request.user)
+                serializer.save(author=request.user)  # Since we are Posting the Blogs
                 return Response({
                     "status": 0,
                     "message": "Blog post created",
                     "data": serializer.data
                 }, status=200)
+
+            # If not valid
             return Response({
                 "status": 1,
                 "message": "Validation failed",
                 "errors": serializer.errors
             }, status=200)
+
+
         except Exception as e:
             return Response({
                 "status": -1,
                 "message": "Unexpected error during creation",
                 "errors": str(e)
             }, status=200)
+
+
+
 
     def update(self, request, *args, **kwargs):
         try:
@@ -192,6 +254,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "errors": str(e)
             }, status=200)
 
+
+
+
     def destroy(self, request, *args, **kwargs):
         try:
             self.check_permissions(request)
@@ -202,6 +267,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                     "message": "You are not allowed to delete this post"
                 }, status=200)
 
+            # If correct user
             instance.delete()
             return Response({
                 "status": 0,
