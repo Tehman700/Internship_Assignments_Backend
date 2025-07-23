@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
 from .serializers import *
@@ -6,6 +7,7 @@ from django.contrib.auth import authenticate
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
+from .urls import *
 
 
 
@@ -279,3 +281,44 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "message": "Error deleting blog post",
                 "errors": str(e)
             }, status=200)
+
+
+
+
+# import json
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from django.db import connection
+# from .models import BlogPost
+#
+# @csrf_exempt
+# def admin_deletion(request):
+#     if request.method != 'POST':
+#         return JsonResponse({"status": 1, "message": "Only POST allowed"}, status=200)
+#
+#     try:
+#         body = json.loads(request.body)
+#         username = body.get("username")
+#         password = body.get("password")
+#     except json.JSONDecodeError:
+#         return JsonResponse({"status": -1, "message": "Invalid JSON body"}, status=200)
+#
+#     # Hardcoded credentials
+#     admin_username = "admin123"
+#     admin_password = "deleteAll"
+#
+#     if username != admin_username or password != admin_password:
+#         return JsonResponse({"status": 1, "message": "Invalid admin credentials"}, status=200)
+#
+#     # Delete all blog posts
+#     BlogPost.objects.all().delete()
+#
+#     # Reset auto-increment ID
+#     with connection.cursor() as cursor:
+#         db_engine = connection.vendor
+#         if db_engine == 'sqlite':
+#             cursor.execute("DELETE FROM sqlite_sequence WHERE name='yourapp_blogpost'")
+#         elif db_engine == 'postgresql':
+#             cursor.execute("ALTER SEQUENCE yourapp_blogpost_id_seq RESTART WITH 1")
+#
+#     return JsonResponse({"status": 0, "message": "All blog posts deleted and ID reset"}, status=200)

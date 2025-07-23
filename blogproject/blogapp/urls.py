@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import LoginViewSet, RegisterViewSet, BlogPostViewSet
+from .views import *
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
@@ -14,4 +14,7 @@ urlpatterns = [
     path('register/', register_view, name='custom-register'),  # POST only - user registration
     # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),       # (Optional) JWT token obtain
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),      # (Optional) JWT token refresh
+
+
+   # path('admin_deletion/', admin_deletion, name = 'admin-deletion'),
 ]
