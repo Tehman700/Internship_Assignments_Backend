@@ -1,104 +1,153 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<readme>
-  <title>Internship Assignments - Backend (Python, Django, DRF)</title>
-  <description>
-    This repository contains backend development assignments completed during an internship. Each assignment is organized into its own folder and built using:
-    - Python
-    - Django
-    - Django REST Framework (DRF)
-    - JWT Authentication
-  </description>
+# 🧠 Internship Assignments - Backend (Python, Django, DRF)
 
-  <folderStructure>
-    <![CDATA[
-    Internship_Assignments_Backend/
-    ├── Assignment_1/
-    │   ├── manage.py
-    │   └── ...
-    ├── Assignment_2/
-    │   ├── manage.py
-    │   └── ...
-    ├── Assignment_3/
-    │   └── ...
-    └── README.md
-    ]]>
-  </folderStructure>
+This repository contains backend development assignments completed during an internship. Each assignment is organized into its own folder and built using:
 
-  <runInstructions>
-    <![CDATA[
-    1. Open terminal or command prompt.
-    2. Navigate into the specific assignment folder:
-       cd Assignment_1
-    3. (Optional) Create and activate a virtual environment:
-       python -m venv venv
-       source venv/bin/activate   # Or venv\Scripts\activate on Windows
-    4. Install dependencies:
-       pip install -r requirements.txt
-    5. Run the server:
-       python manage.py runserver
-    ]]>
-  </runInstructions>
+- 🐍 Python
+- 🌐 Django
+- ⚙️ Django REST Framework (DRF)
+- 🔐 JWT Authentication
 
-  <jwtAuthentication>
-    <flow>
-      <step>1. Register or login to get tokens: POST /api/token/</step>
-      <step>2. Use access token in headers: Authorization: Bearer &lt;access_token&gt;</step>
-      <step>3. Refresh token: POST /api/token/refresh/</step>
-    </flow>
-  </jwtAuthentication>
+---
 
-  <technologies>
-    <item>Python 3.8+</item>
-    <item>Django 4.x</item>
-    <item>Django REST Framework</item>
-    <item>Simple JWT</item>
-    <item>SQLite3 / PostgreSQL</item>
-  </technologies>
+## 📂 Folder Structure
 
-  <apiUsage>
-    <![CDATA[
-    # Get public blog posts
-    GET /api/blogs/
+Each folder represents a self-contained Django project:
 
-    # Create blog post (writer role)
-    POST /api/blogs/
-    Headers:
-      Authorization: Bearer <access_token>
-    Body:
-      {
-        "title": "My Post",
-        "content": "This is a blog post."
-      }
-    ]]>
-  </apiUsage>
+Internship_Assignments_Backend/
+├── Assignment_1/
+│ ├── manage.py
+│ └── ...
+├── Assignment_2/
+│ ├── manage.py
+│ └── ...
+├── Assignment_3/
+│ └── ...
+└── README.md
 
-  <venv>
-    <![CDATA[
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ]]>
-  </venv>
+yaml
+Copy
+Edit
 
-  <assignmentsCovered>
-    <topic>User Registration/Login with JWT</topic>
-    <topic>Role-based access (Writer vs Viewer)</topic>
-    <topic>Blog APIs (CRUD)</topic>
-    <topic>Custom permissions</topic>
-    <topic>ViewSets & Routers</topic>
-    <topic>Django settings management</topic>
-    <topic>Modular app structure</topic>
-    <topic>Token refresh and protection</topic>
-  </assignmentsCovered>
+---
 
-  <contribution>This repository is intended for personal learning and internship tasks. Feel free to fork it, learn from it, or refer to it in your own Django backend projects.</contribution>
+## 🚀 How to Run an Assignment
 
-  <license>
-    MIT License - Free to use for personal and educational purposes.
-  </license>
+> 📝 Every assignment is a complete Django project and can be run independently.
 
-  <author>
-    <name>Tehman Hassan</name>
-    <github>https://github.com/Tehman700</github>
-  </author>
-</readme>
+### Steps:
+
+1. Open terminal or command prompt.
+2. Navigate into the specific assignment folder:
+   ```bash
+   cd Assignment_1  # Replace with your assignment folder
+(Optional) Create and activate a virtual environment:
+
+bash
+Copy
+Edit
+python -m venv venv
+source venv/bin/activate   # On Windows: venv\Scripts\activate
+Install dependencies (if requirements.txt exists):
+
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Run the Django server:
+
+bash
+Copy
+Edit
+python manage.py runserver
+🔐 JWT Authentication Flow
+Most assignments use token-based authentication using Simple JWT.
+
+🧾 Authentication Process:
+Register or Login to get JWT tokens:
+
+bash
+Copy
+Edit
+POST /api/token/
+Response:
+
+json
+Copy
+Edit
+{
+  "access": "your_access_token",
+  "refresh": "your_refresh_token"
+}
+Use the access token for authenticated requests:
+
+makefile
+Copy
+Edit
+Authorization: Bearer <your_access_token>
+To refresh your token:
+
+swift
+Copy
+Edit
+POST /api/token/refresh/
+⚙️ Technologies Used
+Python 3.8+
+
+Django 4.x
+
+Django REST Framework
+
+Simple JWT
+
+SQLite3 or PostgreSQL (depends on assignment)
+
+🧪 Sample API Usage
+http
+Copy
+Edit
+# Example: Get all blog posts (public)
+GET /api/blogs/
+
+# Create blog post (writer role only)
+POST /api/blogs/
+Headers:
+  Authorization: Bearer <access_token>
+Body:
+  {
+    "title": "My Post",
+    "content": "This is a blog post."
+  }
+📦 Virtual Environment & Dependencies
+It’s recommended to use a virtual environment for each project:
+
+bash
+Copy
+Edit
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+If there’s no requirements.txt, you can generate one by:
+
+bash
+Copy
+Edit
+pip freeze > requirements.txt
+✅ Assignment Topics Covered
+User Registration/Login with JWT
+
+Role-based access (Writer vs Viewer)
+
+Blog APIs (CRUD)
+
+Custom permissions
+
+ViewSets & Routers
+
+Django settings management
+
+Modular app structure
+
+Token refresh and protection
+
+🤝 Contributions
+This repository is intended for personal learning and internship tasks. Feel free to fork it, learn from it, or refer to it in your own Django backend projects.
