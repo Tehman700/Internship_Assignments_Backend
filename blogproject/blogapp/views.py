@@ -1,6 +1,7 @@
 from django.http import JsonResponse
+from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import permissions
+from rest_framework import permissions, status
 from .serializers import *
 from .models import *
 from django.contrib.auth import authenticate
@@ -152,8 +153,7 @@ class IsWriterOrReadOnly(permissions.BasePermission):
 
 class BlogPostViewSet(viewsets.ModelViewSet):
     serializer_class = BlogPostSerializer
-    permission_classes = [IsWriterOrReadOnly]
-
+    permission_classes = []
 
 
 
@@ -210,43 +210,39 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 
-    def create(self, request):
-
-        # This block is used whenever we want specific operations to be performed on specific user
+    def create(self, request, *args, **kwargs):
+        # Check custom permission manually to control the response
         permission = IsWriterOrReadOnly()
-
         if not permission.has_permission(request, self):
-            # Permission denied, return custom response
             return Response({
                 "status": 1,
-                "message": "You are not allowed you are viewer"
-            }, status=200)
-
+                "message": "You are not allowed, you are a viewer"
+            }, status=status.HTTP_200_OK)
 
         try:
             serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=False)
+
             if serializer.is_valid():
-                serializer.save(author=request.user)  # Since we are Posting the Blogs
+                serializer.save(author=request.user)
                 return Response({
                     "status": 0,
                     "message": "Blog post created",
                     "data": serializer.data
-                }, status=200)
+                }, status=status.HTTP_200_OK)
 
-            # If not valid
             return Response({
                 "status": 1,
                 "message": "Validation failed",
                 "errors": serializer.errors
-            }, status=200)
-
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({
                 "status": -1,
                 "message": "Unexpected error during creation",
                 "errors": str(e)
-            }, status=200)
+            }, status=status.HTTP_200_OK)
 
 
 
@@ -309,6 +305,58 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 
+    from .permissions import IsViewer
+
+    @action(detail=True, methods=['post'], url_path='like', permission_classes=[IsViewer])
+    @action(detail=True, methods=['post'], url_path='like', permission_classes=[IsViewer])
+    def like(self, request, pk=None):
+        blog_post = self.get_object()
+        serializer = BlogReactionSerializer(
+            data={'reaction_type': 'like'},
+            context={'request': request, 'blog_post': blog_post}
+        )
+        serializer.is_valid(raise_exception=True)
+        reaction = serializer.save()
+        toggled_off = serializer.context.get('toggled_off', False)
+
+        message = "Like removed" if toggled_off else "Liked successfully"
+        return Response({
+            "status": 0,
+            "message": message,
+            "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
+        }, status=200)
+
+    @action(detail=True, methods=['post'], url_path='dislike', permission_classes=[IsViewer])
+    def dislike(self, request, pk=None):
+        blog_post = self.get_object()
+        serializer = BlogReactionSerializer(
+            data={'reaction_type': 'dislike'},
+            context={'request': request, 'blog_post': blog_post}
+        )
+        serializer.is_valid(raise_exception=True)
+        reaction = serializer.save()
+        toggled_off = serializer.context.get('toggled_off', False)
+
+        message = "Dislike removed" if toggled_off else "Disliked successfully"
+        return Response({
+            "status": 0,
+            "message": message,
+            "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
+        }, status=200)
+
+
+
+
+    @action(detail=True, methods=['post'], url_path='comment', permission_classes=[IsViewer])
+    def comment(self, request, pk=None):
+        blog_post = self.get_object()
+        serializer = BlogCommentSerializer(
+            data=request.data,
+            context={'request': request, 'blog_post': blog_post}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"status": 0, "message": "Comment added", "data": serializer.data}, status=200)
 
 
 
@@ -316,7 +364,8 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 
-#
+# This is a seperate Code for working when admin wants to delete all the Posts and everything from database
+# Using a Harcoded Username and Password
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt

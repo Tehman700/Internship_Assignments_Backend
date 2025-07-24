@@ -33,3 +33,33 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+
+
+
+class BlogReaction(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blog_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE)
+    REACTION_CHOICES = (
+    ('like', 'Like'), ('dislike', 'Dislike'),
+    )
+
+    reaction_type = models.CharField(max_length=10, choices=REACTION_CHOICES)
+
+    class Meta:
+        unique_together = ('user', 'blog_post')
+
+
+
+class BlogComment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blog_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        unique_together = ('user', 'blog_post')

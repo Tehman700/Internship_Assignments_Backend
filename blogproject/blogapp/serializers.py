@@ -65,8 +65,76 @@ import from Meta class the Model name is BlogPost in the model.py file and the o
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+    dislikes_count = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
         model = BlogPost
-        fields = ['id', 'title', 'content', 'publication_date', 'author']
+        fields = [
+            'id', 'title', 'content', 'publication_date', 'author',
+            'likes_count', 'dislikes_count', 'comments'
+        ]
+
+    def get_likes_count(self, obj):
+        return BlogReaction.objects.filter(blog_post=obj, reaction_type='like').count()
+
+    def get_dislikes_count(self, obj):
+        return BlogReaction.objects.filter(blog_post=obj, reaction_type='dislike').count()
+
+    def get_comments(self, obj):
+        comments = BlogComment.objects.filter(blog_post=obj)
+        return BlogCommentSerializer(comments, many=True).data
+
+
+class BlogReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogReaction
+        fields = ['id', 'reaction_type']
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        blog_post = self.context['blog_post']
+        reaction_type = validated_data['reaction_type']
+
+        existing_reaction = BlogReaction.objects.filter(user=user, blog_post=blog_post).first()
+
+        if existing_reaction:
+            if existing_reaction.reaction_type == reaction_type:
+                # Same reaction again: cancel (delete)
+                existing_reaction.delete()
+
+                self.context['toggled_off'] = True
+                return existing_reaction  # Optionally return something custom here
+            else:
+                # Different reaction: update
+                existing_reaction.reaction_type = reaction_type
+                existing_reaction.save()
+                self.context['toggled_off'] = False
+                return existing_reaction
+        else:
+                # Create new reaction
+            reaction = BlogReaction.objects.create(user=user, blog_post=blog_post, reaction_type=reaction_type)
+            self.context['toggled_off'] = False
+            return reaction
+
+
+class BlogCommentSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    created_at = serializers.ReadOnlyField()
+
+    class Meta:
+        model = BlogComment
+        fields = ['id', 'user', 'comment', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        blog_post = self.context['blog_post']
+        return BlogComment.objects.create(
+            user=user,
+            blog_post=blog_post,
+            comment=validated_data['comment']
+        )
