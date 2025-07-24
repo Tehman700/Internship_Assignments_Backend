@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from  blogproject.blogapp.models import User
+from  blogapp.Models.user_models import User
 
 """
 For the Register Serializer, the Password field is for the authentication and since we are using User model so we defined

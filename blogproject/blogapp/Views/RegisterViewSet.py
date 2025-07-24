@@ -1,8 +1,9 @@
 from django.http import JsonResponse
-from blogapp.Serializers import RegisterSerializer
-from blogproject.blogapp.models import User
+from blogapp.Serializers.RegisterSerializer import RegisterSerializer
+from blogapp.Models.user_models import User
 from rest_framework import viewsets
 from rest_framework.response import Response
+
 
 """
 Workflow for RegisterViewSet:
