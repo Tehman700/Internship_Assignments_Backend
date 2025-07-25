@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-
 class BlogReaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     blog_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE)
