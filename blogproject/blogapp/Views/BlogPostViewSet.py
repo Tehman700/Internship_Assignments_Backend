@@ -1,17 +1,20 @@
-from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import viewsets
-from blogapp.Models.BlogPost import BlogPost
-from blogapp.Serializers.BlogPostSerializer import BlogPostSerializer
-
-
+from rest_framework.response import Response
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
+    from blogapp.Serializers.BlogPostSerializer import BlogPostSerializer
+
     serializer_class = BlogPostSerializer
     permission_classes = []
+
+
+
 # Normally we use builtin queryset for fetching all the users, but we have some restrictions so created separate function
     def get_queryset(self):
         user = self.request.user                                # the particular user
+        from blogapp.Models.BlogPost import BlogPost
         if user.is_authenticated:                               # if is validated and authenticated, it covers all JWT
             if user.role == 'writer':                           # if writer
                 return BlogPost.objects.filter(author=user)     # filter out the object of that user as author = user
@@ -64,12 +67,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # Check custom permission manually to control the response
-
-        import IsWriterOrReadOnly
+        from blogapp.Views.IsWriterOrReadOnly import IsWriterOrReadOnly
 
         permission = IsWriterOrReadOnly()
-        from rest_framework import status
-
         if not permission.has_permission(request, self):
             return Response({
                 "status": 1,
@@ -161,63 +161,86 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             }, status=200)
 
 
-    from blogapp.Permissions.IsWriterOrReadOnly import IsViewer
+    from blogapp.Utils.permissions import IsViewer
     from rest_framework.decorators import action
+
     @action(detail=True, methods=['post'], url_path='like', permission_classes=[IsViewer])
     def like(self, request, pk=None):
-        from blogapp.Serializers.BlogReactionSerializer import BlogReactionSerializer
-        blog_post = self.get_object()
-        serializer = BlogReactionSerializer(
-            data={'reaction_type': 'like'},
-            context={'request': request, 'blog_post': blog_post}
-        )
-        serializer.is_valid(raise_exception=True)
-        reaction = serializer.save()
-        toggled_off = serializer.context.get('toggled_off', False)
+        try:
+            blog_post = self.get_object()
+            from blogapp.Serializers.BlogReactionSerializer import BlogReactionSerializer
 
-        message = "Like removed" if toggled_off else "Liked successfully"
-        return Response({
-            "status": 0,
-            "message": message,
-            "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
-        }, status=200)
+            serializer = BlogReactionSerializer(
+                data={'reaction_type': 'like'},
+                context={'request': request, 'blog_post': blog_post}
+            )
+            serializer.is_valid(raise_exception=True)
+            reaction = serializer.save()
+            toggled_off = serializer.context.get('toggled_off', False)
+
+            return Response({
+                "status": 0,
+                "message": "Like removed" if toggled_off else "Liked successfully",
+                "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                "status": -1,
+                "message": "Error while liking the post",
+                "errors": str(e)
+            }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='dislike', permission_classes=[IsViewer])
     def dislike(self, request, pk=None):
-        blog_post = self.get_object()
-        from blogapp.Serializers.BlogReactionSerializer import BlogReactionSerializer
-        serializer = BlogReactionSerializer(
-            data={'reaction_type': 'dislike'},
-            context={'request': request, 'blog_post': blog_post}
-        )
-        serializer.is_valid(raise_exception=True)
-        reaction = serializer.save()
-        toggled_off = serializer.context.get('toggled_off', False)
+        try:
+            blog_post = self.get_object()
+            from blogapp.Serializers.BlogReactionSerializer import BlogReactionSerializer
 
-        message = "Dislike removed" if toggled_off else "Disliked successfully"
-        return Response({
-            "status": 0,
-            "message": message,
-            "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
-        }, status=200)
+            serializer = BlogReactionSerializer(
+                data={'reaction_type': 'dislike'},
+                context={'request': request, 'blog_post': blog_post}
+            )
+            serializer.is_valid(raise_exception=True)
+            reaction = serializer.save()
+            toggled_off = serializer.context.get('toggled_off', False)
 
+            return Response({
+                "status": 0,
+                "message": "Dislike removed" if toggled_off else "Disliked successfully",
+                "data": BlogReactionSerializer(reaction).data if not toggled_off else {}
+            }, status=status.HTTP_200_OK)
 
-
+        except Exception as e:
+            return Response({
+                "status": -1,
+                "message": "Error while disliking the post",
+                "errors": str(e)
+            }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='comment', permission_classes=[IsViewer])
     def comment(self, request, pk=None):
-        blog_post = self.get_object()
-        from blogapp.Serializers.BlogCommentSerializer import BlogCommentSerializer
-        serializer = BlogCommentSerializer(
-            data=request.data,
-            context={'request': request, 'blog_post': blog_post}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"status": 0, "message": "Comment added", "data": serializer.data}, status=200)
+        try:
+            blog_post = self.get_object()
 
+            from blogapp.Serializers.BlogCommentSerializer import BlogCommentSerializer
 
+            serializer = BlogCommentSerializer(
+                data=request.data,
+                context={'request': request, 'blog_post': blog_post}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
+            return Response({
+                "status": 0,
+                "message": "Comment added",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
 
-
-
+        except Exception as e:
+            return Response({
+                "status": -1,
+                "message": "You have already Commented on this Blog Post",
+                "errors": str(e)
+            }, status=status.HTTP_200_OK)

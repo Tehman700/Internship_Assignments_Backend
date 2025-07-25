@@ -1,7 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from blogapp.Views.LoginViewSet import LoginViewSet
+from blogapp.Views.RegisterViewSet import RegisterViewSet
+from blogapp.Views.BlogPostViewSet import BlogPostViewSet
+from blogapp.Utils.admin_deletion import admin_deletion
 
 router = DefaultRouter()
 router.register(r'login', LoginViewSet, basename='login')      # Handles user login (POST)
@@ -14,7 +16,6 @@ urlpatterns = [
     path('register/', register_view, name='custom-register'),  # POST only - user registration
     # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),       # (Optional) JWT token obtain
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),      # (Optional) JWT token refresh
-
-
+   #
    path('admin_deletion/', admin_deletion, name = 'admin-deletion'),
 ]

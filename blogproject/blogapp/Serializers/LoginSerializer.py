@@ -7,6 +7,10 @@ validate to authenticate the incoming user using authenticate() method and user 
 otherwise make sure to defined that its invalid
 
 """
+
+
+
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)

@@ -1,3 +1,5 @@
+# This is a seperate Code for working when admin wants to delete all the Posts and everything from database
+# Using a Harcoded Username and Password
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -27,9 +29,11 @@ def admin_deletion(request):
         return JsonResponse({"status": 1, "message": "Invalid admin credentials"}, status=200)
 
     try:
+        # Delete all blog posts and users
         BlogPost.objects.all().delete()
         User.objects.all().delete()
 
+        # Reset auto-increment ID counters for blog posts and users
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_blogpost'")
             cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_user'")

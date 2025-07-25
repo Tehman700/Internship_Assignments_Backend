@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-
 # THis is the model for blogpost that contains the title, and content which users will write in JSON rest will be automatically fetched
 
 class BlogPost(models.Model):
