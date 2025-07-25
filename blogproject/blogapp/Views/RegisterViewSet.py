@@ -15,8 +15,6 @@ Always returns HTTP 200 OK, regardless of success or error,
 except for incorrect URL (which would be 404).
 """
 
-
-
 class RegisterViewSet(viewsets.ModelViewSet):
     from blogapp.models import User
     queryset = User.objects.all()
