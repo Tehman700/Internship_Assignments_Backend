@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from blogapp.Models.BlogComment import BlogComment
 
-
 class BlogCommentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     created_at = serializers.ReadOnlyField()

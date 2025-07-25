@@ -24,6 +24,8 @@ class BlogPostSerializer(serializers.ModelSerializer):
             'likes_count', 'dislikes_count', 'comments'
         ]
 
+
+    # These Functions are working separately for the Counting of Likes abd Dislikes
     def get_likes_count(self, obj):
         return BlogReaction.objects.filter(blog_post=obj, reaction_type='like').count()
 
