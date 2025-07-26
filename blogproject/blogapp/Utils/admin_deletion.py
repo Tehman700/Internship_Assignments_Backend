@@ -21,10 +21,9 @@ def admin_deletion(request):
     except json.JSONDecodeError:
         return JsonResponse({"status": -1, "message": "Invalid JSON body"}, status=200)
 
-    # Hardcoded credentials
+    # Hardcoded credentials so that it can be used when deletion of all posts
     admin_username = "admin123"
     admin_password = "deleteEverything"
-
     if username != admin_username or password != admin_password:
         return JsonResponse({"status": 1, "message": "Invalid admin credentials"}, status=200)
 
