@@ -20,7 +20,6 @@ class RegisterViewSet(viewsets.ModelViewSet):
     from blogapp.Serializers.RegisterSerializer import RegisterSerializer
     serializer_class = RegisterSerializer       # Used everytime for telling what serializer and queryset using
     http_method_names = ['post']
-
 # INTENTIONALLY ADDED THIS SO THAT OTHER REQUEST OTHER THAN POST WILL NOT GET 405 EXCEPTION:
     def dispatch(self, request, *args, **kwargs):
         # Allow only POST requests
