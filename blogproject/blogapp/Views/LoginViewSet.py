@@ -47,7 +47,6 @@ class LoginViewSet(viewsets.ViewSet):
                     "message": "Login failed",
                     "errors": serializer.errors
                 }, status=200)
-
         except Exception as e:
             return Response({
                 "status": -1,
