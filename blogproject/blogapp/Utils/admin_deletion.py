@@ -37,12 +37,10 @@ def admin_deletion(request):
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_blogpost'")
             cursor.execute("DELETE FROM sqlite_sequence WHERE name='blogapp_user'")
-
         return JsonResponse({
             "status": 0,
             "message": "All blog posts and users deleted. IDs reset to 1."
         }, status=200)
-
     except Exception as e:
         return JsonResponse({
             "status": -1,
