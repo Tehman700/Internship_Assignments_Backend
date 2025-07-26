@@ -8,9 +8,6 @@ otherwise make sure to defined that its invalid
 
 """
 
-
-
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
