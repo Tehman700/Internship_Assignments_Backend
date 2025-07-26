@@ -41,7 +41,6 @@ class LoginViewSet(viewsets.ViewSet):
                     "refresh": str(refresh),
 
                 }, status=200)
-
             else:
                 return Response({
                     "status": 1,
