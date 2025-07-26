@@ -4,7 +4,6 @@ from blogapp.Models.BlogComment import BlogComment
 class BlogCommentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     created_at = serializers.ReadOnlyField()
-
     class Meta:
         model = BlogComment
         fields = ['id', 'user', 'comment', 'created_at']
