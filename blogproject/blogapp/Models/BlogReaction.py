@@ -9,6 +9,5 @@ class BlogReaction(models.Model):
     )
 
     reaction_type = models.CharField(max_length=10, choices=REACTION_CHOICES)
-
     class Meta:
         unique_together = ('user', 'blog_post')
