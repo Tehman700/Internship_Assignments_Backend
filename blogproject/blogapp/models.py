@@ -11,7 +11,6 @@ class User(AbstractUser):
         ('viewer', 'Viewer'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-
     REQUIRED_FIELDS = ['email', 'mobile_number', 'role', 'first_name', 'last_name']          # These are the rest fields required
 
 
