@@ -6,7 +6,7 @@ from blogapp.Serializers.LoginSerializer import LoginSerializer
 
 class LoginViewSet(viewsets.ViewSet):
 
-    # INTENTIONALLY ADDED THIS SO THAT OTHER REQUEST OTHER THAN POST WILL NOT GET 405 EXCEPTION:
+    # INTENTIONALLY ADDED THIS PART SO THAT OTHER REQUEST OTHER THAN POST WILL NOT GET 405 EXCEPTION:
     def dispatch(self, request, *args, **kwargs):
         if request.method != 'POST':
             return JsonResponse({
