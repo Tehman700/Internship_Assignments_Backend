@@ -160,7 +160,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "errors": str(e)
             }, status=200)
 
-
     from blogapp.Utils.permissions import IsViewer
     from rest_framework.decorators import action
 
