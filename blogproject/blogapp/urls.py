@@ -16,7 +16,6 @@ urlpatterns = [
     path('register/', register_view, name='custom-register'),  # POST only - user registration
     path('admin_deletion/', admin_deletion, name='admin-deletion'),
 
-
     # IF ANYONE WANTS TO TAKE TOKEN ON SEPARATE ENDPOINT NOT ON THE LOGIN ENDPOINT, THEN COMMENT OUT THESE BELOW TWO LINES
     # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),       # (Optional) JWT token obtain
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),      # (Optional) JWT token refresh
