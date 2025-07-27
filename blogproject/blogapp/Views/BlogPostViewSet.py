@@ -42,7 +42,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 
-
 # Retrieve function is called when we want to get specific id or blogpost with id
     def retrieve(self, request, *args, **kwargs):  # GET /api/blogs/<id>/
         try:
