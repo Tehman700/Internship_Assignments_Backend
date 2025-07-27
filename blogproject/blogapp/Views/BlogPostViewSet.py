@@ -22,7 +22,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return BlogPost.objects.none()                          # return empty if nothing
 
 
-
 # The above function just gets the raw queryset to view it we use below function
 
     def list(self, request):  # Called when GET /api/blogs/
