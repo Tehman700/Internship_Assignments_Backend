@@ -7,7 +7,6 @@ class IsWriterOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
-
         # IF FOR OTHER REQUESTS (POST, PUT, DELETE) THEN IT MUST BE WRITER
         return request.user.is_authenticated and request.user.role == 'writer'
 
