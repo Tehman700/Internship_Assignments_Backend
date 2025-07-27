@@ -8,7 +8,6 @@ The def create function will be only called when the data is validated and we wi
 
 """
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
