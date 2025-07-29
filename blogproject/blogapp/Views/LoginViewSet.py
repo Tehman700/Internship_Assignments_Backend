@@ -53,3 +53,6 @@ class LoginViewSet(viewsets.ViewSet):
                 "message": "Initial error occurred",
                 "errors": str(e)
             }, status=200)
+
+
+    #
