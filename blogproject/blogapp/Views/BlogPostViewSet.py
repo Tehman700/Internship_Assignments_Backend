@@ -31,8 +31,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             queryset = self.get_queryset()
             serializer = self.get_serializer(queryset, many=True)  # Converts to list of dictionaries
             return Response({
-
-                # Message
                 "status": 0,
                 "message": "Blog posts fetched successfully",
                 "data": serializer.data
