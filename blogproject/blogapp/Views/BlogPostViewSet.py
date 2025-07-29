@@ -42,7 +42,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
                 "errors": str(e)
             }, status=200)
 # debug for printing states, yotube
-
 # Retrieve function is called when we want to get specific id or blogpost with id
     def retrieve(self, request, *args, **kwargs):  # GET /api/blogs/<id>/
         try:
