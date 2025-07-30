@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'blogapp',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
