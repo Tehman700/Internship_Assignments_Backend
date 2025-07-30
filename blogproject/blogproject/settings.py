@@ -66,9 +66,7 @@ TEMPLATES = [
         },
     },
 ]
-
 AUTH_USER_MODEL = 'blogapp.User'
-
 
 WSGI_APPLICATION = 'blogproject.wsgi.application'
 
