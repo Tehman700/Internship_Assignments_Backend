@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 
 # This is the model for blogpost that contains the title, and content which users will write in JSON rest will be automatically fetchedd
-
 class BlogPost(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
