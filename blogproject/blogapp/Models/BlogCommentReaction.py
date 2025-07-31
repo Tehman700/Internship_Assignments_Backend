@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from Models.BlogComment import BlogComment
+from blogapp.Models.BlogComment import BlogComment
 
 
 class BlogCommentReaction(models.Model):
