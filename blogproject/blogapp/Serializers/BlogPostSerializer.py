@@ -7,7 +7,6 @@ from blogapp.Serializers.BlogCommentSerializer import BlogCommentSerializer
 """
 For the BlogPost Serializer, the author field was to be fetched from source and others are just normally same as we
 import from Meta class the Model name is BlogPost in the model.py file and the other required fields
-
 """
 
 
