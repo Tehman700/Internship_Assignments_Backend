@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 # Below is the Model for Users that contain all the necessary fields for Registering the User
 class User(AbstractUser):
     email = models.EmailField(unique=True)
