@@ -13,6 +13,7 @@ class BlogCommentReplySerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'comment', 'created_at', 'like_count', 'dislike_count', 'user_reaction']
         read_only_fields = ['id', 'user', 'created_at']
 
+
     def get_like_count(self, obj):
         return obj.reactions.filter(reaction_type='like').count()
 
