@@ -20,18 +20,7 @@ urlpatterns = [
 
 
 # SLUg
-
-
     # IF ANYONE WANTS TO TAKE TOKEN ON SEPARATE ENDPOINT NOT ON THE LOGIN ENDPOINT, THEN COMMENT OUT THESE BELOW TWO LINES
     # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),       # (Optional) JWT token obtain
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),      # (Optional) JWT token refresh
 ]
-
-
-# URL patterns will be:
-# POST /blog-posts/{id}/comment/           - Add comment or reply
-# GET  /blog-posts/{id}/comments/          - Get all comments
-# POST /blog-posts/{id}/like/              - Like blog post
-# POST /blog-posts/{id}/dislike/           - Dislike blog post
-# POST /comments/{comment_id}/like/        - Like comment
-# POST /comments/{comment_id}/dislike/     - Dislike comment
